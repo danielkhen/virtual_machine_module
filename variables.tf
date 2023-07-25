@@ -144,7 +144,7 @@ variable "disks" {
   description = "(Optional) A list of managed disk to attach to the virtual machines."
   type = list(object({
     name                   = string
-    storage_account_Type   = string
+    storage_account_type   = string
     create_option          = string
     lun                    = number
     caching                = string
