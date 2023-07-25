@@ -59,16 +59,11 @@ resource "azurerm_windows_virtual_machine" "vms" {
     }
   }
 
-  dynamic "source_image_reference" {
-    #TODO test source image
-    for_each = var.source_image_reference == null ? [] : [true]
-
-    content {
-      offer     = var.source_image_reference.offer
-      publisher = var.source_image_reference.publisher
-      sku       = var.source_image_reference.sku
-      version   = var.source_image_reference.version
-    }
+  source_image_reference {
+    offer     = var.source_image_reference.offer
+    publisher = var.source_image_reference.publisher
+    sku       = var.source_image_reference.sku
+    version   = var.source_image_reference.version
   }
 
   dynamic "identity" { #TODO test identities
@@ -121,15 +116,11 @@ resource "azurerm_linux_virtual_machine" "vms" {
     }
   }
 
-  dynamic "source_image_reference" {
-    for_each = var.source_image_reference == null ? [] : [true]
-
-    content {
-      offer     = var.source_image_reference.offer
-      publisher = var.source_image_reference.publisher
-      sku       = var.source_image_reference.sku
-      version   = var.source_image_reference.version
-    }
+  source_image_reference {
+    offer     = var.source_image_reference.offer
+    publisher = var.source_image_reference.publisher
+    sku       = var.source_image_reference.sku
+    version   = var.source_image_reference.version
   }
 
   dynamic "identity" {
