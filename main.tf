@@ -169,7 +169,7 @@ resource "azurerm_managed_disk" "disks" { #TODO test me
 }
 
 module "nic_diagnostics" {
-  source = "../diagnostic_setting"
+  source = "github.com/danielkhen/diagnostic_setting_module"
   count  = var.vm_count
 
   name                       = var.nic_diagnostics_name
