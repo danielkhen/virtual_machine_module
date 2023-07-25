@@ -145,6 +145,7 @@ resource "azurerm_managed_disk" "disks" { #TODO test me
   resource_group_name    = var.resource_group_name
   create_option          = each.value.create_option
   storage_account_type   = each.value.storage_account_type
+  disk_size_gb           = each.value.disk_size_gb
   disk_encryption_set_id = each.value.disk_encryption_set_id
   disk_iops_read_write   = each.value.disk_iops_read_write
   disk_mbps_read_write   = each.value.disk_mbps_read_write

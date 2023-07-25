@@ -148,7 +148,7 @@ variable "disks" {
     create_option          = string
     lun                    = number
     caching                = string
-    disk_size_gb           = optional(number, null)
+    disk_size_gb           = number
     disk_encryption_set_id = optional(string, null)
     disk_iops_read_write   = optional(number, null)
     disk_mbps_read_write   = optional(number, null)
