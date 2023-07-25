@@ -137,7 +137,7 @@ locals {
   ]...)
 }
 
-resource "azurerm_managed_disk" "disks" { #TODO test me
+resource "azurerm_managed_disk" "disks" {
   for_each = local.disks_map
 
   name                   = each.value.name
