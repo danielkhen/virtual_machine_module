@@ -156,7 +156,7 @@ resource "azurerm_managed_disk" "disks" { #TODO test me
 resource "azurerm_virtual_machine_data_disk_attachment" "disks_attachment" {
   for_each = local.disks_map
 
-  managed_disk_id    = azurerm_managed_disk.disks[each.key]
+  managed_disk_id    = azurerm_managed_disk.disks[each.key].id
   virtual_machine_id = each.value.vm_id
   caching            = each.value.caching
   lun                = each.value.lun
