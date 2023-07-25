@@ -17,6 +17,7 @@
 | <a name="input_identity_type"></a> [identity\_type](#input\_identity\_type) | (Optional) The type of the identity of the virtual machines. | `string` | `"None"` | no |
 | <a name="input_ip_configuration_name"></a> [ip\_configuration\_name](#input\_ip\_configuration\_name) | (Optional) The name of the ip configuration of the network interface. | `string` | `"default"` | no |
 | <a name="input_location"></a> [location](#input\_location) | (Required) The location of the virtual machines. | `string` | n/a | yes |
+| <a name="input_log_analytics_enabled"></a> [log\_analytics\_enabled](#input\_log\_analytics\_enabled) | (Optional) Should all logs be sent to a log analytics workspace. | `bool` | `false` | no |
 | <a name="input_log_analytics_id"></a> [log\_analytics\_id](#input\_log\_analytics\_id) | (Optional) The id of the log analytics workspace. | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The name of the virtual machines. | `string` | n/a | yes |
 | <a name="input_nic_diagnostics_name"></a> [nic\_diagnostics\_name](#input\_nic\_diagnostics\_name) | (Optional) The name of the network interface diagnostic setting. | `string` | `"nic-diagnostics"` | no |

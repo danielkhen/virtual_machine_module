@@ -165,7 +165,7 @@ resource "azurerm_managed_disk" "disks" { #TODO test me
 
 module "nic_diagnostics" {
   source = "github.com/danielkhen/diagnostic_setting_module"
-  count  = var.vm_count
+  count  = var.log_analytics_enabled ? var.vm_count : 0
 
   name                       = var.nic_diagnostics_name
   target_resource_id         = azurerm_network_interface.nics[count.index].id
