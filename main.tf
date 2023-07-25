@@ -23,7 +23,6 @@ resource "azurerm_network_interface" "nics" {
 }
 
 resource "azurerm_windows_virtual_machine" "vms" {
-  #TODO Test linux and windows vms
   count = local.is_windows ? var.vm_count : 0
 
   name                = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
@@ -39,7 +38,6 @@ resource "azurerm_windows_virtual_machine" "vms" {
   admin_password = var.admin_password
 
   os_disk {
-    #TODO test disk
     name                             = var.os_disk.name
     caching                          = var.os_disk.caching
     storage_account_type             = var.os_disk.storage_account_type
@@ -64,15 +62,6 @@ resource "azurerm_windows_virtual_machine" "vms" {
     publisher = var.source_image_reference.publisher
     sku       = var.source_image_reference.sku
     version   = var.source_image_reference.version
-  }
-
-  dynamic "identity" { #TODO test identities
-    for_each = var.identity_type == "None" ? [] : [true]
-
-    content {
-      type         = var.identity_type
-      identity_ids = var.user_assigned_identities
-    }
   }
 
   lifecycle {
@@ -141,7 +130,8 @@ locals {
   disks_map = merge([
     for count in range(var.vm_count) : {
       for disk in var.disks : "${disk.name}-${count}" => merge(disk, {
-        name = var.vm_count == 1 ? disk.name : "${disk.name}-${count}"
+        name  = var.vm_count == 1 ? disk.name : "${disk.name}-${count}"
+        vm_id = local.is_windows ? azurerm_windows_virtual_machine.vms[count].id : azurerm_linux_virtual_machine.vms[count].id
       })
     }
   ]...)
@@ -161,6 +151,15 @@ resource "azurerm_managed_disk" "disks" { #TODO test me
   disk_iops_read_only    = each.value.disk_iops_read_only
   disk_mbps_read_only    = each.value.disk_mbps_read_only
   upload_size_bytes      = each.value.upload_size_bytes
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "disks_attachment" {
+  for_each = local.disks_map
+
+  managed_disk_id    = azurerm_managed_disk.disks[each.key]
+  virtual_machine_id = each.value.vm_id
+  caching            = each.value.caching
+  lun                = each.value.lun
 }
 
 module "nic_diagnostics" {

@@ -146,6 +146,8 @@ variable "disks" {
     name                   = string
     storage_account_Type   = string
     create_option          = string
+    lun                    = number
+    caching                = string
     disk_size_gb           = optional(number, null)
     disk_encryption_set_id = optional(string, null)
     disk_iops_read_write   = optional(number, null)
