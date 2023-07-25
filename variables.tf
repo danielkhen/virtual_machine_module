@@ -107,13 +107,14 @@ variable "vm_count" {
 }
 
 variable "source_image_reference" {
-  description = "(Required) An object defining the source image for the virtual machines."
+  description = "(Optional) An object defining the source image for the virtual machines."
   type = object({
     publisher = string
     offer     = string
     sku       = string
     version   = string
   })
+  default = null
 }
 
 variable "os_disk" {
