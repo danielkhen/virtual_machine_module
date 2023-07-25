@@ -50,7 +50,7 @@ resource "azurerm_windows_virtual_machine" "vms" {
     security_encryption_type         = var.os_disk.security_encryption_type
 
     dynamic "diff_disk_settings" {
-      for_each = var.os_disk.diff_disk_settings != null ? [] : [true]
+      for_each = var.os_disk.diff_disk_settings == null ? [] : [true]
 
       content {
         option    = var.os_disk.diff_disk_settings.option
@@ -121,11 +121,15 @@ resource "azurerm_linux_virtual_machine" "vms" {
     }
   }
 
-  source_image_reference {
-    offer     = var.source_image_reference.offer
-    publisher = var.source_image_reference.publisher
-    sku       = var.source_image_reference.sku
-    version   = var.source_image_reference.version
+  dynamic "source_image_reference" {
+    for_each = var.source_image_reference == null ? [] : [true]
+
+    content {
+      offer     = var.source_image_reference.offer
+      publisher = var.source_image_reference.publisher
+      sku       = var.source_image_reference.sku
+      version   = var.source_image_reference.version
+    }
   }
 
   dynamic "identity" {
