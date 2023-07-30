@@ -25,7 +25,7 @@
 | <a name="input_os_disk"></a> [os\_disk](#input\_os\_disk) | (Required) An object defining the disk containing the operation system for the virtual machines. | <pre>object({<br>    caching                          = string<br>    storage_account_type             = string<br>    name                             = optional(string, null)<br>    disk_size_gb                     = optional(number, null)<br>    write_accelerator_enabled        = optional(bool, false)<br>    disk_encryption_set_id           = optional(string, null)<br>    secure_vm_disk_encryption_set_id = optional(string, null)<br>    security_encryption_type         = optional(string, null)<br>    diff_disk_settings = optional(object({<br>      option    = string<br>      placement = optional(string, null)<br>    }), null)<br>  })</pre> | n/a | yes |
 | <a name="input_os_type"></a> [os\_type](#input\_os\_type) | (Required) The os type of the vm, Linux or Windows. | `string` | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | (required) The resource group name of the virtual machines. | `string` | n/a | yes |
-| <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments) | (Optional) A list of rules for the system identity, system assigned identity must be enabled. | <pre>list(object({<br>    scope = string<br>    role  = string<br>  }))</pre> | `[]` | no |
+| <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments) | (Optional) A list of rules for the system identity, system assigned identity must be enabled. | <pre>list(object({<br>    name  = string<br>    scope = string<br>    role  = string<br>  }))</pre> | `[]` | no |
 | <a name="input_size"></a> [size](#input\_size) | (Required) The size of the virtual machines. | `string` | n/a | yes |
 | <a name="input_source_image_reference"></a> [source\_image\_reference](#input\_source\_image\_reference) | (Required) An object defining the source image for the virtual machines. | <pre>object({<br>    publisher = string<br>    offer     = string<br>    sku       = string<br>    version   = string<br>  })</pre> | n/a | yes |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | (Required) The subnet id of the network interfaces. | `string` | n/a | yes |
@@ -57,4 +57,41 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_nic_diagnostics"></a> [nic\_diagnostics](#module\_nic\_diagnostics) | github.com/danielkhen/diagnostic_setting_module | n/a |
+
+## Example Code
+
+```hcl
+module "work_vm" {
+  source = "github.com/danielkhen/virtual_machine_module"
+
+  name                = "example-vm"
+  location            = "westeurope"
+  resource_group_name = azurerm_resource_group.example.name
+  size                = "Standard_B2s"
+  nic_name            = "example-nic"
+  subnet_id           = azurerm_subnet.example.id
+  os_type             = "Linux"
+
+  os_disk = {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference = {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts"
+    version   = "latest"
+  }
+
+  admin_username = "adminuser"
+  admin_password = "SecretPassword123!" #should be secret
+
+  identity_type    = "SystemAssigned"
+  role_assignments = local.role_assignments #View variable documentation
+
+  log_analytics_enabled = local.log_analytics_enabled
+  log_analytics_id      = module.hub_log_analytics.id
+}
+```
 <!-- END_TF_DOCS -->

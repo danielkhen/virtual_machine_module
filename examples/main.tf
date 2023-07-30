@@ -1,15 +1,15 @@
 module "work_vm" {
   source = "github.com/danielkhen/virtual_machine_module"
 
-  name                   = "example-vm"
-  location               = "westeurope"
-  resource_group_name    = azurerm_resource_group.example.name
-  size                   = "Standard_B2s"
-  nic_name               = "example-nic"
-  subnet_id              = azurerm_subnet.example.id
-  os_type                = "Linux"
+  name                = "example-vm"
+  location            = "westeurope"
+  resource_group_name = azurerm_resource_group.example.name
+  size                = "Standard_B2s"
+  nic_name            = "example-nic"
+  subnet_id           = azurerm_subnet.example.id
+  os_type             = "Linux"
 
-  os_disk                = {
+  os_disk = {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }

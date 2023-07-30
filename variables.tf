@@ -61,7 +61,7 @@ variable "identity_type" {
 variable "role_assignments" {
   description = "(Optional) A list of rules for the system identity, system assigned identity must be enabled."
   type = list(object({
-    name = string
+    name  = string
     scope = string
     role  = string
   }))
