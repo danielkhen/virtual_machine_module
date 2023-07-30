@@ -1,6 +1,6 @@
 locals {
   location            = "westeurope"
-  resource_group_name = "dtf-virtual-network-test"
+  resource_group_name = "dtf-virtual-machine-test"
 }
 
 resource "azurerm_resource_group" "test_rg" {
@@ -36,10 +36,13 @@ module "vnet" {
 }
 
 locals {
-  vm_name    = "test-vm"
-  vm_size    = "Standard_B2s"
-  nic_name   = "test-nic"
-  vm_os_type = "Linux"
+  vm_name                            = "test-vm"
+  vm_size                            = "Standard_B2s"
+  nic_name                           = "test-nic"
+  vm_os_type                         = "Linux"
+  vm_admin_username                  = "daniel"
+  vm_disable_password_authentication = true
+  vm_public_ssh_key                  = file("./id_rsa.pub")
 
   os_disk = {
     caching              = "ReadWrite"
@@ -57,13 +60,16 @@ locals {
 module "vm" {
   source = "../"
 
-  name                   = local.vm_name
-  location               = local.location
-  resource_group_name    = azurerm_resource_group.test_rg.name
-  nic_name               = local.nic_name
-  os_disk                = local.os_disk
-  os_type                = local.vm_os_type
-  size                   = local.vm_size
-  subnet_id              = module.vnet.subnet_ids["VMSubnet"]
-  source_image_reference = local.source_image_reference
+  name                            = local.vm_name
+  location                        = local.location
+  resource_group_name             = azurerm_resource_group.test_rg.name
+  nic_name                        = local.nic_name
+  os_disk                         = local.os_disk
+  os_type                         = local.vm_os_type
+  size                            = local.vm_size
+  subnet_id                       = module.vnet.subnet_ids["VMSubnet"]
+  source_image_reference          = local.source_image_reference
+  disable_password_authentication = local.vm_disable_password_authentication
+  admin_username                  = local.vm_admin_username
+  admin_public_ssh_key            = local.vm_public_ssh_key
 }

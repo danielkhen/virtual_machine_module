@@ -2,7 +2,7 @@ locals {
   ip_allocation_method = "Dynamic"
   is_windows           = var.os_type == "Windows"
 }
-#TODO redo tests and examples
+
 resource "azurerm_network_interface" "nics" {
   count = var.vm_count
 
@@ -83,6 +83,15 @@ resource "azurerm_linux_virtual_machine" "vms" {
   disable_password_authentication = var.disable_password_authentication
   admin_username                  = var.admin_username
   admin_password                  = var.admin_password
+
+  dynamic "admin_ssh_key" {
+    for_each = var.disable_password_authentication ? [true] : []
+
+    content {
+      username   = var.admin_username
+      public_key = var.admin_public_ssh_key
+    }
+  }
 
   os_disk {
     name                             = var.os_disk.name
