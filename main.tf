@@ -2,8 +2,7 @@ locals {
   ip_allocation_method = "Dynamic"
   is_windows           = var.os_type == "Windows"
 }
-
-
+#TODO redo tests and examples
 resource "azurerm_network_interface" "nics" {
   count = var.vm_count
 
@@ -175,7 +174,7 @@ module "nic_diagnostics" {
 locals {
   role_assignements_map = merge([
     for count in range(var.vm_count) : {
-      for role_assignment in var.role_assignments : "vm${count}_${role_assignment.role}_${role_assignment.scope}" => merge(role_assignment, {
+      for role_assignment in var.role_assignments : role_assignment.name => merge(role_assignment, {
         principal_id = local.is_windows ? azurerm_windows_virtual_machine.vms[count].identity[0].principal_id : azurerm_linux_virtual_machine.vms[count].identity[0].principal_id
       })
     }
