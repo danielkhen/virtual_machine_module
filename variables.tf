@@ -65,7 +65,7 @@ variable "identity_type" {
 
 variable "role_assignments" {
   description = "(Optional) A list of rules for the system identity, system assigned identity must be enabled."
-  type        = list(object({
+  type = list(object({
     name  = string
     scope = string
     role  = string
@@ -120,7 +120,7 @@ variable "vm_count" {
 
 variable "source_image_reference" {
   description = "(Required) An object defining the source image for the virtual machines."
-  type        = object({
+  type = object({
     publisher = string
     offer     = string
     sku       = string
@@ -130,7 +130,7 @@ variable "source_image_reference" {
 
 variable "os_disk" {
   description = "(Required) An object defining the disk containing the operation system for the virtual machines."
-  type        = object({
+  type = object({
     caching                          = string
     storage_account_type             = string
     name                             = optional(string, null)
@@ -139,7 +139,7 @@ variable "os_disk" {
     disk_encryption_set_id           = optional(string, null)
     secure_vm_disk_encryption_set_id = optional(string, null)
     security_encryption_type         = optional(string, null)
-    diff_disk_settings               = optional(object({
+    diff_disk_settings = optional(object({
       option    = string
       placement = optional(string, null)
     }), null)
@@ -148,7 +148,7 @@ variable "os_disk" {
 
 variable "disks" {
   description = "(Optional) A list of managed disk to attach to the virtual machines."
-  type        = list(object({
+  type = list(object({
     name                   = string
     storage_account_type   = string
     create_option          = string
