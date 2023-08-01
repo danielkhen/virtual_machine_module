@@ -41,16 +41,9 @@ variable "admin_password" {
   default     = null
 }
 
-variable "log_analytics_enabled" {
-  description = "(Optional) Should all logs be sent to a log analytics workspace."
-  type        = bool
-  default     = false
-}
-
 variable "log_analytics_id" {
-  description = "(Optional) The id of the log analytics workspace."
+  description = "(Required) The id of the log analytics workspace."
   type        = string
-  default     = null
 }
 
 variable "identity_type" {
@@ -79,21 +72,9 @@ variable "user_assigned_identities" {
   default     = null
 }
 
-variable "nic_diagnostics_name" {
-  description = "(Optional) The name of the network interface diagnostic setting."
-  type        = string
-  default     = "nic-diagnostics"
-}
-
 variable "nic_name" {
   description = "(Required) The name of the network interface."
   type        = string
-}
-
-variable "ip_configuration_name" {
-  description = "(Optional) The name of the ip configuration of the network interface."
-  type        = string
-  default     = "default"
 }
 
 variable "os_type" {
@@ -152,7 +133,6 @@ variable "disks" {
     name                   = string
     storage_account_type   = string
     create_option          = string
-    lun                    = number
     caching                = string
     disk_size_gb           = number
     disk_encryption_set_id = optional(string, null)
@@ -163,4 +143,22 @@ variable "disks" {
     upload_size_bytes      = optional(number, null)
   }))
   default = []
+}
+
+variable "public_ip_enabled" {
+  description = "(Optional) Should the virtual machines have public ips attached."
+  type        = bool
+  default     = false
+}
+
+variable "public_ip_name" {
+  description = "(Optional) The name of the public ip of the virtual machines, Required when public ip is enabled."
+  type        = string
+  default     = null
+}
+
+variable "public_ip_sku" {
+  description = "(Optional) The sku of the public ips of the virtual machines."
+  type        = string
+  default     = "Basic"
 }

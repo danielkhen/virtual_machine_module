@@ -1,6 +1,22 @@
 locals {
-  ip_allocation_method = "Dynamic"
-  is_windows           = var.os_type == "Windows"
+  ip_allocation_method         = "Static"
+  private_ip_allocation_method = "Dynamic"
+  is_windows                   = var.os_type == "Windows"
+}
+
+locals {
+  ip_configuration_name = "default"
+}
+
+resource "azurerm_public_ip" "ips" {
+  #TODO use in tests
+  count = var.public_ip_enabled ? var.vm_count : 0
+
+  name                = var.vm_count == 1 ? var.public_ip_name : "${var.public_ip_name}-${count.index}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = local.ip_allocation_method
+  sku                 = var.public_ip_sku
 }
 
 resource "azurerm_network_interface" "nics" {
@@ -11,9 +27,10 @@ resource "azurerm_network_interface" "nics" {
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    name                          = var.ip_configuration_name
+    name                          = local.ip_configuration_name
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = local.ip_allocation_method
+    public_ip_address_id          = var.public_ip_enabled ? azurerm_public_ip.ips[count.index] : null
   }
 
   lifecycle {
@@ -137,8 +154,10 @@ resource "azurerm_linux_virtual_machine" "vms" {
 locals {
   disks_map = merge([
     for count in range(var.vm_count) : {
-      for disk in var.disks : "${disk.name}-${count}" => merge(disk, {
-        name  = var.vm_count == 1 ? disk.name : "${disk.name}-${count}"
+      for disk_index in range(length(var.disks)) : "${var.disks[disk_index].name}-${count}" =>
+      merge(var.disks[disk_index], {
+        name  = var.vm_count == 1 ? var.disks[disk_index].name : "${var.disks[disk_index].name}-${count}"
+        lun   = disk_index
         vm_id = local.is_windows ? azurerm_windows_virtual_machine.vms[count].id : azurerm_linux_virtual_machine.vms[count].id
       })
     }
@@ -171,15 +190,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disks_attachment" {
   lun                = each.value.lun
 }
 
-module "nic_diagnostics" {
-  source = "github.com/danielkhen/diagnostic_setting_module"
-  count  = var.log_analytics_enabled ? var.vm_count : 0
-
-  name                       = var.nic_diagnostics_name
-  target_resource_id         = azurerm_network_interface.nics[count.index].id
-  log_analytics_workspace_id = var.log_analytics_id
-}
-
 locals {
   role_assignements_map = merge([
     for count in range(var.vm_count) : {
@@ -196,4 +206,12 @@ resource "azurerm_role_assignment" "vm_roles" {
   principal_id         = each.value.principal_id
   role_definition_name = each.value.role
   scope                = each.value.scope
+}
+
+module "nic_diagnostic" {
+  source = "github.com/danielkhen/diagnostic_setting_module"
+
+  name                       = "${azurerm_network_interface.nics[count.index].name}-diagnostic"
+  target_resource_id         = azurerm_network_interface.nics[count.index].id
+  log_analytics_workspace_id = var.log_analytics_id
 }
