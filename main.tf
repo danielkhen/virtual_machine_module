@@ -210,6 +210,7 @@ resource "azurerm_role_assignment" "vm_roles" {
 
 module "nic_diagnostic" {
   source = "github.com/danielkhen/diagnostic_setting_module"
+  count = var.vm_count
 
   name                       = "${azurerm_network_interface.nics[count.index].name}-diagnostic"
   target_resource_id         = azurerm_network_interface.nics[count.index].id
