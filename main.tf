@@ -9,7 +9,6 @@ locals {
 }
 
 resource "azurerm_public_ip" "ips" {
-  #TODO use in tests
   count = var.public_ip_enabled ? var.vm_count : 0
 
   name                = var.vm_count == 1 ? var.public_ip_name : "${var.public_ip_name}-${count.index}"
@@ -30,7 +29,7 @@ resource "azurerm_network_interface" "nics" {
     name                          = local.ip_configuration_name
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = local.private_ip_allocation_method
-    public_ip_address_id          = var.public_ip_enabled ? azurerm_public_ip.ips[count.index] : null
+    public_ip_address_id          = var.public_ip_enabled ? azurerm_public_ip.ips[count.index].id : null
   }
 
   lifecycle {
@@ -210,7 +209,7 @@ resource "azurerm_role_assignment" "vm_roles" {
 
 module "nic_diagnostic" {
   source = "github.com/danielkhen/diagnostic_setting_module"
-  count = var.vm_count
+  count  = var.vm_count
 
   name                       = "${azurerm_network_interface.nics[count.index].name}-diagnostic"
   target_resource_id         = azurerm_network_interface.nics[count.index].id

@@ -36,6 +36,16 @@ module "vnet" {
 }
 
 locals {
+  activity_log_analytics_name           = "activity-monitor-log-workspace"
+  activity_log_analytics_resource_group = "dor-hub-n-spoke"
+}
+
+data "azurerm_log_analytics_workspace" "activity" {
+  name                = local.activity_log_analytics_name
+  resource_group_name = local.activity_log_analytics_resource_group
+}
+
+locals {
   vm_name                            = "test-vm"
   vm_size                            = "Standard_B2s"
   nic_name                           = "test-nic"
@@ -43,11 +53,30 @@ locals {
   vm_admin_username                  = "daniel"
   vm_disable_password_authentication = true
   vm_public_ssh_key                  = file("./id_rsa.pub")
+  vm_public_ip_enabled               = true
+  vm_public_ip_name                  = "test-vm-ip"
 
   os_disk = {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
+
+  disks = [
+    {
+      name                 = "disk1"
+      create_option        = "Empty"
+      storage_account_type = "Standard_LRS"
+      caching              = "ReadWrite"
+      disk_size_gb         = 3
+    },
+    {
+      name                 = "disk2"
+      create_option        = "Empty"
+      storage_account_type = "Standard_LRS"
+      caching              = "ReadOnly"
+      disk_size_gb         = 5
+    }
+  ]
 
   source_image_reference = {
     publisher = "Canonical"
@@ -72,4 +101,8 @@ module "vm" {
   disable_password_authentication = local.vm_disable_password_authentication
   admin_username                  = local.vm_admin_username
   admin_public_ssh_key            = local.vm_public_ssh_key
+  disks                           = local.disks
+  log_analytics_id                = data.azurerm_log_analytics_workspace.activity.id
+  public_ip_enabled               = local.vm_public_ip_enabled
+  public_ip_name                  = local.vm_public_ip_name
 }

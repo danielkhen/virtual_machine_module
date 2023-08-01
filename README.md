@@ -89,11 +89,12 @@ module "work_vm" {
   admin_username = "adminuser"
   admin_password = "SecretPassword123!" #should be secret
 
-  identity_type    = "SystemAssigned"
-  role_assignments = local.role_assignments #View variable documentation
+  identity_type = "SystemAssigned"
+  #View variable documentation
+  role_assignments = local.role_assignments
+  disks            = local.disks
 
-  log_analytics_enabled = local.log_analytics_enabled
-  log_analytics_id      = module.hub_log_analytics.id
+  log_analytics_id = module.hub_log_analytics.id
 }
 ```
 <!-- END_TF_DOCS -->
