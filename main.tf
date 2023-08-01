@@ -29,7 +29,7 @@ resource "azurerm_network_interface" "nics" {
   ip_configuration {
     name                          = local.ip_configuration_name
     subnet_id                     = var.subnet_id
-    private_ip_address_allocation = local.ip_allocation_method
+    private_ip_address_allocation = local.private_ip_allocation_method
     public_ip_address_id          = var.public_ip_enabled ? azurerm_public_ip.ips[count.index] : null
   }
 
