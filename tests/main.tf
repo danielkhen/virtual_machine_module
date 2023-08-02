@@ -48,7 +48,6 @@ data "azurerm_log_analytics_workspace" "activity" {
 locals {
   vm_name                            = "test-vm"
   vm_size                            = "Standard_B2s"
-  nic_name                           = "test-nic"
   vm_os_type                         = "Linux"
   vm_admin_username                  = "daniel"
   vm_disable_password_authentication = true
@@ -92,7 +91,6 @@ module "vm" {
   name                            = local.vm_name
   location                        = local.location
   resource_group_name             = azurerm_resource_group.test_rg.name
-  nic_name                        = local.nic_name
   os_disk                         = local.os_disk
   os_type                         = local.vm_os_type
   size                            = local.vm_size

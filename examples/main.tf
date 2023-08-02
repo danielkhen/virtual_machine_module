@@ -5,7 +5,6 @@ module "work_vm" {
   location            = "westeurope"
   resource_group_name = azurerm_resource_group.example.name
   size                = "Standard_B2s"
-  nic_name            = "example-nic"
   subnet_id           = azurerm_subnet.example.id
   os_type             = "Linux"
 
