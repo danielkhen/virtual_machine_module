@@ -19,7 +19,7 @@ resource "azurerm_public_ip" "ips" {
 }
 
 resource "azurerm_network_interface" "nics" {
-  count = var.vm_count
+  count = var.vm_count #TODO never use count for resources
 
   name                = var.vm_count == 1 ? var.nic_name : "${var.nic_name}-${count.index}"
   location            = var.location
@@ -38,7 +38,7 @@ resource "azurerm_network_interface" "nics" {
 }
 
 resource "azurerm_windows_virtual_machine" "vms" {
-  count = local.is_windows ? var.vm_count : 0
+  count = local.is_windows ? var.vm_count : 0 #TODO move to foreach
 
   name                = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
   location            = var.location
