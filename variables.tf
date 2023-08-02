@@ -72,11 +72,6 @@ variable "user_assigned_identities" {
   default     = null
 }
 
-variable "nic_name" {
-  description = "(Required) The name of the network interface."
-  type        = string
-}
-
 variable "os_type" {
   description = "(Required) The os type of the vm, Linux or Windows."
   type        = string
@@ -143,22 +138,4 @@ variable "disks" {
     upload_size_bytes      = optional(number, null)
   }))
   default = []
-}
-
-variable "public_ip_enabled" {
-  description = "(Optional) Should the virtual machines have public ips attached."
-  type        = bool
-  default     = false
-}
-
-variable "public_ip_name" {
-  description = "(Optional) The name of the public ip of the virtual machines, Required when public ip is enabled."
-  type        = string
-  default     = null
-}
-
-variable "public_ip_sku" {
-  description = "(Optional) The sku of the public ips of the virtual machines."
-  type        = string
-  default     = "Basic"
 }

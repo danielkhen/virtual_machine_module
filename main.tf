@@ -6,22 +6,13 @@ locals {
 
 locals {
   ip_configuration_name = "default"
-}
-
-resource "azurerm_public_ip" "ips" {
-  count = var.public_ip_enabled ? var.vm_count : 0
-
-  name                = var.vm_count == 1 ? var.public_ip_name : "${var.public_ip_name}-${count.index}"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = local.ip_allocation_method
-  sku                 = var.public_ip_sku
+  nic_name              = "${var.name}-nic"
 }
 
 resource "azurerm_network_interface" "nics" {
   count = var.vm_count #TODO never use count for resources
 
-  name                = var.vm_count == 1 ? var.nic_name : "${var.nic_name}-${count.index}"
+  name                = var.vm_count == 1 ? local.nic_name : "${local.nic_name}-${count.index}"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -29,7 +20,6 @@ resource "azurerm_network_interface" "nics" {
     name                          = local.ip_configuration_name
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = local.private_ip_allocation_method
-    public_ip_address_id          = var.public_ip_enabled ? azurerm_public_ip.ips[count.index].id : null
   }
 
   lifecycle {
