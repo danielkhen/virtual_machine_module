@@ -78,7 +78,7 @@ resource "azurerm_windows_virtual_machine" "vms" {
 }
 
 resource "azurerm_linux_virtual_machine" "vms" {
-  for_each = local.is_windows ? local.vms_map : {}
+  for_each = local.is_windows ? {} : local.vms_map
 
   name                = each.value.name
   location            = var.location
