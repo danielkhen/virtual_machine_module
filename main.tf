@@ -6,13 +6,16 @@ locals {
 
 locals {
   ip_configuration_name = "default"
-  nic_name              = "${var.name}-nic"
+  vms_map = { for index in range(var.vm_count) : "${var.name}-${index}" => {
+    name     = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
+    nic_name = var.vm_count == 1 ? "${var.name}-nic" : "${var.name}-${count.index}-nic"
+  } }
 }
 
 resource "azurerm_network_interface" "nics" {
-  count = var.vm_count #TODO never use count for resources
+  for_each = local.vms_map
 
-  name                = var.vm_count == 1 ? local.nic_name : "${local.nic_name}-${count.index}"
+  name                = each.value.nic_name
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -28,15 +31,15 @@ resource "azurerm_network_interface" "nics" {
 }
 
 resource "azurerm_windows_virtual_machine" "vms" {
-  count = local.is_windows ? var.vm_count : 0 #TODO move to foreach
+  for_each = local.is_windows ? local.vms_map : {}
 
-  name                = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
+  name                = each.value.name
   location            = var.location
   resource_group_name = var.resource_group_name
   size                = var.size
 
   network_interface_ids = [
-    azurerm_network_interface.nics[count.index].id
+    azurerm_network_interface.nics[each.key].id
   ]
 
   admin_username = var.admin_username
@@ -75,15 +78,15 @@ resource "azurerm_windows_virtual_machine" "vms" {
 }
 
 resource "azurerm_linux_virtual_machine" "vms" {
-  count = local.is_windows ? 0 : var.vm_count
+  for_each = local.is_windows ? local.vms_map : {}
 
-  name                = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
+  name                = each.value.name
   location            = var.location
   resource_group_name = var.resource_group_name
   size                = var.size
 
   network_interface_ids = [
-    azurerm_network_interface.nics[count.index].id
+    azurerm_network_interface.nics[each.key].id
   ]
 
   disable_password_authentication = var.disable_password_authentication
@@ -142,12 +145,12 @@ resource "azurerm_linux_virtual_machine" "vms" {
 
 locals {
   disks_map = merge([
-    for count in range(var.vm_count) : {
-      for disk_index in range(length(var.disks)) : "${var.disks[disk_index].name}-${count}" =>
-      merge(var.disks[disk_index], {
-        name  = var.vm_count == 1 ? var.disks[disk_index].name : "${var.disks[disk_index].name}-${count}"
+    for vm_key, vm in local.vms_map : {
+      for disk_index, disk in var.disks : "${vm.name}-${disk.name}" =>
+      merge(disk, {
+        name  = "${vm.name}-${disk.name}"
         lun   = disk_index
-        vm_id = local.is_windows ? azurerm_windows_virtual_machine.vms[count].id : azurerm_linux_virtual_machine.vms[count].id
+        vm_id = local.is_windows ? azurerm_windows_virtual_machine.vms[vm_key].id : azurerm_linux_virtual_machine.vms[vm_key].id
       })
     }
   ]...)
@@ -198,10 +201,10 @@ resource "azurerm_role_assignment" "vm_roles" {
 }
 
 module "nic_diagnostic" {
-  source = "github.com/danielkhen/diagnostic_setting_module"
-  count  = var.vm_count
+  source   = "github.com/danielkhen/diagnostic_setting_module"
+  for_each = local.vms_map
 
-  name                       = "${azurerm_network_interface.nics[count.index].name}-diagnostic"
-  target_resource_id         = azurerm_network_interface.nics[count.index].id
+  name                       = "${azurerm_network_interface.nics[each.key].name}-diagnostic"
+  target_resource_id         = azurerm_network_interface.nics[each.key].id
   log_analytics_workspace_id = var.log_analytics_id
 }
