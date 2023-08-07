@@ -184,9 +184,9 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disks_attachment" {
 
 locals {
   role_assignements_map = merge([
-    for count in range(var.vm_count) : {
+    for vm in(local.is_windows ? azurerm_windows_virtual_machine.vms : azurerm_linux_virtual_machine.vms) : {
       for role_assignment in var.role_assignments : role_assignment.name => merge(role_assignment, {
-        principal_id = local.is_windows ? azurerm_windows_virtual_machine.vms[count].identity[0].principal_id : azurerm_linux_virtual_machine.vms[count].identity[0].principal_id
+        principal_id = vm.identity[0].principal_id
       })
     }
   ]...)
