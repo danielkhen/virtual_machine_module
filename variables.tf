@@ -109,16 +109,16 @@ variable "os_disk" {
   type = object({
     caching                          = string
     storage_account_type             = string
-    name                             = optional(string, null)
-    disk_size_gb                     = optional(number, null)
-    write_accelerator_enabled        = optional(bool, false)
-    disk_encryption_set_id           = optional(string, null)
-    secure_vm_disk_encryption_set_id = optional(string, null)
-    security_encryption_type         = optional(string, null)
+    name                             = optional(string)
+    disk_size_gb                     = optional(number)
+    write_accelerator_enabled        = optional(bool)
+    disk_encryption_set_id           = optional(string)
+    secure_vm_disk_encryption_set_id = optional(string)
+    security_encryption_type         = optional(string)
     diff_disk_settings = optional(object({
       option    = string
-      placement = optional(string, null)
-    }), null)
+      placement = optional(string)
+    }))
   })
 }
 
@@ -130,12 +130,12 @@ variable "disks" {
     create_option          = string
     caching                = string
     disk_size_gb           = number
-    disk_encryption_set_id = optional(string, null)
-    disk_iops_read_write   = optional(number, null)
-    disk_mbps_read_write   = optional(number, null)
-    disk_iops_read_only    = optional(number, null)
-    disk_mbps_read_only    = optional(number, null)
-    upload_size_bytes      = optional(number, null)
+    disk_encryption_set_id = optional(string)
+    disk_iops_read_write   = optional(number)
+    disk_mbps_read_write   = optional(number)
+    disk_iops_read_only    = optional(number)
+    disk_mbps_read_only    = optional(number)
+    upload_size_bytes      = optional(number)
   }))
   default = []
 }
