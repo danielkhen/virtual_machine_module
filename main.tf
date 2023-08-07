@@ -7,8 +7,8 @@ locals {
 locals {
   ip_configuration_name = "default"
   vms_map = { for index in range(var.vm_count) : "${var.name}-${index}" => {
-    name     = var.vm_count == 1 ? var.name : "${var.name}-${count.index}"
-    nic_name = var.vm_count == 1 ? "${var.name}-nic" : "${var.name}-${count.index}-nic"
+    name     = var.vm_count == 1 ? var.name : "${var.name}-${index}"
+    nic_name = var.vm_count == 1 ? "${var.name}-nic" : "${var.name}-${index}-nic"
   } }
 }
 
